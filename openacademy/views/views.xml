@@ -155,7 +155,7 @@
 		<field name="name">Sessions</field>
 		<field name="res_model">openacademy.session</field>
 		<field name="view_type">form</field>
-		<field name="view_model">tree,form</field>
+		<field name="view_mode">tree,form</field>
 	</record>
 
 	<menuitem name="Sessions" id="session_menu" parent="openacademy_menu" action="session_list_action"/>
