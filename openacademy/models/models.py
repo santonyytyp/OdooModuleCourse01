@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, exceptions
+import time
+from psycopg2 import IntegrityError
+from datetime import timedelta
 
 def get_uid(self, *a):
 	return self.env.uid
@@ -65,6 +68,13 @@ class Session(models.Model):
 	attendee_ids = fields.Many2many('res.partner', string="Attendees")
 	taken_seats = fields.Float(compute='_taken_seats')
 	active = fields.Boolean(default=True)
+	end_date = fields.Date(store=True, compute='_get_end_date')
+
+	@api.depends('start_date','duration')
+	def _get_end_date(self):
+		for record in self.filtered('start_date'):
+			start_date = fields.Datetime.from_string(record.start_date)
+			record.end_date = start_date + timedelta(days=record.duration, seconds=-1)
 
 	@api.depends('seats','attendee_ids')
 	def _taken_seats(self):
