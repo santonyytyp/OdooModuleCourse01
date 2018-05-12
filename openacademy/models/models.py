@@ -70,6 +70,25 @@ class Session(models.Model):
 	active = fields.Boolean(default=True)
 	end_date = fields.Date(store=True, compute='_get_end_date', inverse='_set_end_date')
 
+	attendees_count = fields.Integer(compute='_get_attendees_count', store=True)
+	color = fields.Float()
+	hours = fields.Float(string="Duration in hours", compute='_get_hours', inverse='_set_hours')
+
+	@api.depends('duration')
+	def _get_hours(self):
+		for r in self:
+			r.hours = r.duration * 24
+
+	def _set_hours(self):
+		for r in self:
+			r.duration = r.hours/24
+
+
+	@api.depends('attendee_ids')
+	def _get_attendees_count(self):
+		for record in self:
+			record.attendees_count = len(record.attendee_ids)
+
 	@api.depends('start_date','duration')
 	def _get_end_date(self):
 		for record in self.filtered('start_date'):
